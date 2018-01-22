@@ -47,7 +47,7 @@
                                 <tr>
                                     <th>${item.fips}</th>
                                     <td>${item.state_abbr}</td>
-                                    <td>${item.state_abbr}</td>
+                                    <td>${item.state}</td>
                                 </tr>`;
                         });
                         var lastHalfRowsHtml = ``;
@@ -56,7 +56,7 @@
                                 <tr>
                                     <th>${item.fips}</th>
                                     <td>${item.state_abbr}</td>
-                                    <td>${item.state_abbr}</td>
+                                    <td>${item.state}</td>
                                 </tr>`;
                         });
 
@@ -81,6 +81,8 @@
                     body: function() {
                         return `
 <div class="row">
+    <div class="col-sm">
+    </div>
 </div>
                         `;
                     }()
