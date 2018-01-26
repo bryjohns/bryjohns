@@ -4,152 +4,125 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-2.2.4.js"
+            integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+            crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="display-functions.js"></script>
+        <script src="cheats-fips.js"></script>
         <script>
-            var stateInfoFips = [{"fips":"10","state_abbr":"DE","state":"Delaware"},{"fips":"11","state_abbr":"DC","state":"District Of Columbia"},{"fips":"12","state_abbr":"FL","state":"Florida"},{"fips":"13","state_abbr":"GA","state":"Georgia"},{"fips":"14","state_abbr":"GU","state":"Guam"},{"fips":"15","state_abbr":"HI","state":"Hawaii"},{"fips":"16","state_abbr":"ID","state":"Idaho"},{"fips":"17","state_abbr":"IL","state":"Illinois"},{"fips":"18","state_abbr":"IN","state":"Indiana"},{"fips":"19","state_abbr":"IA","state":"Iowa"},{"fips":"20","state_abbr":"KS","state":"Kansas"},{"fips":"21","state_abbr":"KY","state":"Kentucky"},{"fips":"22","state_abbr":"LA","state":"Louisiana"},{"fips":"23","state_abbr":"ME","state":"Maine"},{"fips":"24","state_abbr":"MD","state":"Maryland"},{"fips":"25","state_abbr":"MA","state":"Massachusetts"},{"fips":"26","state_abbr":"MI","state":"Michigan"},{"fips":"27","state_abbr":"MN","state":"Minnesota"},{"fips":"28","state_abbr":"MS","state":"Mississippi"},{"fips":"29","state_abbr":"MO","state":"Missouri"},{"fips":"30","state_abbr":"MT","state":"Montana"},{"fips":"31","state_abbr":"NE","state":"Nebraska"},{"fips":"32","state_abbr":"NV","state":"Nevada"},{"fips":"33","state_abbr":"NH","state":"New Hampshire"},{"fips":"34","state_abbr":"NJ","state":"New Jersey"},{"fips":"35","state_abbr":"NM","state":"New Mexico"},{"fips":"36","state_abbr":"NY","state":"New York"},{"fips":"37","state_abbr":"NC","state":"North Carolina"},{"fips":"38","state_abbr":"ND","state":"North Dakota"},{"fips":"39","state_abbr":"OH","state":"Ohio"},{"fips":"40","state_abbr":"OK","state":"Oklahoma"},{"fips":"41","state_abbr":"OR","state":"Oregon"},{"fips":"42","state_abbr":"PA","state":"Pennsylvania"},{"fips":"43","state_abbr":"PR","state":"Puerto Rico"},{"fips":"44","state_abbr":"RI","state":"Rhode Island"},{"fips":"45","state_abbr":"SC","state":"South Carolina"},{"fips":"46","state_abbr":"SD","state":"South Dakota"},{"fips":"47","state_abbr":"TN","state":"Tennessee"},{"fips":"48","state_abbr":"TX","state":"Texas"},{"fips":"49","state_abbr":"UT","state":"Utah"},{"fips":"50","state_abbr":"VT","state":"Vermont"},{"fips":"51","state_abbr":"VA","state":"Virginia"},{"fips":"52","state_abbr":"VI","state":"Virgin Islands"},{"fips":"53","state_abbr":"WA","state":"Washington"},{"fips":"54","state_abbr":"WV","state":"West Virginia"},{"fips":"55","state_abbr":"WI","state":"Wisconsin"},{"fips":"56","state_abbr":"WY","state":"Wyoming"},{"fips":"01","state_abbr":"AL","state":"Alabama"},{"fips":"02","state_abbr":"AK","state":"Alaska"},{"fips":"03","state_abbr":"AS","state":"American Samoa"},{"fips":"04","state_abbr":"AZ","state":"Arizona"},{"fips":"05","state_abbr":"AR","state":"Arkansas"},{"fips":"06","state_abbr":"CA","state":"California"},{"fips":"07","state_abbr":"CZ","state":"Canal Zone"},{"fips":"08","state_abbr":"CO","state":"Colorado"},{"fips":"09","state_abbr":"CT","state":"Connecticut"}];
+            var renderer = {
+                addTab: function(id, displayName) {
+                    $('#tabHeaders').append(`
+                    <li class="nav-item">
+                        <a class="nav-link" id="nav-${id}-tab" data-toggle="tab" href="#nav-${id}" role="tab" aria-controls="nav-${id}" aria-selected="true">${displayName}</a>
+                    </li>
+                    `);
+                },
+                addBody: function(id, bodyContents) {
+                    $('#nav-tabContent').append(`
+                    <div class="tab-pane fade" id="nav-${id}" role="tabpanel" aria-labelledby="nav-${id}-tab">
+                        ${bodyContents}
+                    </div>
+                    `);
+                },
+                getTableSectionHtml: function(section) {
+                    var data = section.data.sort(section.baseSort);
+                    var chunks = section.view.split;
+                    var splitInterval = Math.min(section.data.length / chunks);
+                    var parts = [];
+                    for (var ndx = 0; ndx < chunks; ndx++) {
+                        var start = splitInterval * ndx;
+                        var end = ndx === chunks - 1 ? section.data.length - 1 : (ndx + 1) * splitInterval;
+                        console.log(section.data);
+                        parts.push(section.data.slice(start, end));
+                    }
 
-            var tabs = [
-                {
-                    id: 'fips',
-                    displayName: 'Fips',
-                    body: function() {
-                        var tableStart = `
-                        <div class="col-md">
-                        <table class="table table-sm table-dark">
-                            <thead>
-                                <tr>
-                                <th scope="col">Fips Code</th>
-                                <th scope="col">State Abbr</th>
-                                <th scope="col">State</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                        `;
-
-                        var tableEnd = `
-                        </table>
-                        </div>
-                        `;
-
-                        var stateInfoFipsSorted = stateInfoFips.sort(function(a, b) {
-                            return a.state > b.state ? 1 : -1;
-                        });
-
-                        var splitPoint = Math.min(stateInfoFipsSorted.length / 2);
-                        var firstHalf = stateInfoFipsSorted.slice(0, splitPoint);
-                        var lastHalf = stateInfoFipsSorted.slice(splitPoint);
-
-                        var firstHalfRowsHtml = ``;
-                        firstHalf.forEach(function(item) {
-                            firstHalfRowsHtml += `
-                                <tr>
-                                    <th>${item.fips}</th>
-                                    <td>${item.state_abbr}</td>
-                                    <td>${item.state}</td>
-                                </tr>`;
-                        });
-                        var lastHalfRowsHtml = ``;
-                        lastHalf.forEach(function(item) {
-                            lastHalfRowsHtml += `
-                                <tr>
-                                    <th>${item.fips}</th>
-                                    <td>${item.state_abbr}</td>
-                                    <td>${item.state}</td>
-                                </tr>`;
-                        });
-
-                        html = `
-                            <div class="row">
-                                ${tableStart}
-                                ${firstHalfRowsHtml}
-                                ${tableEnd}
-
-                                ${tableStart}
-                                ${lastHalfRowsHtml}
-                                ${tableEnd}
+                    var bodyHtml = `
+                        <div class="row">
+                    `;
+                    parts.forEach(part => {
+                        bodyHtml += `
+                            <div class="col-md">
+                                ` + cheatsDisplay.table(section.headers, part) + `
                             </div>
                         `;
-
-                        return html;
-                    }()
-                },
-                {
-                    id: 'sql',
-                    displayName: 'Sql',
-                    body: function() {
-                        return `
-<div class="row">
-    <div class="col-sm">
-    </div>
-</div>
-                        `;
-                    }()
-                },
-                {
-                    id: 'vim',
-                    displayName: 'Vim',
-                    body: function() {
-                        return `
-<div>hey</div>
-                        `;
-                    }()
-                },
-                {
-                    id: 'bash',
-                    displayName: 'Bash',
-                    body: function() {
-                        return `
-<div>hey</div>
-                        `;
-                    }()
-                }
-            ];
-
-            var renderer = {
-                tabHeaders: function (tupleIdDisplayNameArray) {
-                    var html = `
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    `;
-
-                    tupleIdDisplayNameArray.forEach( function(idDisplayNameBody) {
-                        html += `
-                            <li class="nav-item">
-                                <a class="nav-link" id="nav-${idDisplayNameBody.id}-tab" data-toggle="tab" href="#nav-${idDisplayNameBody.id}" role="tab" aria-controls="nav-${idDisplayNameBody.id}" aria-selected="true">${idDisplayNameBody.displayName}</a>
-                            </li>
-                        `;
                     });
 
-                    html += `
-                        </ul>
-                    `;
-
-                    return html;
-                },
-                tabBodies: function(tupleIdDisplayNameBodyArray) {
-                    var html = `<div class="tab-content" id="nav-tabContent">`;
-                    tupleIdDisplayNameBodyArray.forEach( function(idDisplayNameBody) {
-                        html += `
-                        <div class="tab-pane fade" id="nav-${idDisplayNameBody.id}" role="tabpanel" aria-labelledby="nav-${idDisplayNameBody.id}-tab">
-                            ${idDisplayNameBody.body}
-                        </div>`;
-                    });
-                    
-                    html += `</div>`;
-                    return html;
+                    return bodyHtml;
                 }
             }
 
-            jQuery(function() {
-                $('#my-cheats').html(renderer.tabHeaders(tabs) + renderer.tabBodies(tabs));
+            $(function() {
+                console.log('started');
+                $.getScript({
+                    url: 'cheats-fips.js'
+                }).done(() => {
+                    console.log('loaded');
+                    var cheatSection = cheatsData.fips;
+                    renderer.addTab(cheatSection.id, cheatSection.name);
+                    renderer.addBody(cheatSection.id, renderer.getTableSectionHtml(cheatSection));
+                });
+                $.getScript({
+                    url: 'cheats-vim.js'
+                }).done(() => {
+                    var cheatSection = cheatsData.vim;
+                    renderer.addTab(cheatSection.id, cheatSection.name);
+                    renderer.addBody(cheatSection.id, (function(section) {
+                        var bodyHtml = `
+                        <div class="row">
+                            <div class="col-md">
+                        `;
+
+                        var total = 0;
+                        section.data.forEach((s) => {
+                            total += s.items.length;
+                        });
+                        console.log(total);
+                        var colSize = Math.min(total / 3);
+                        var weight = 0;
+                        section.data.forEach((s, ndx) => {
+                            var listItems = '';
+                            s.items.forEach(item => { listItems += `
+                                        <li>${item.html}</li>
+                            `; });
+
+                            bodyHtml += `
+                                <h4>${s.name}</h4>
+                                <ul class="list-unstyled">
+                                    ${listItems}
+                                </ul>
+                            `;
+                            
+                            weight += s.items.length;
+                            if (ndx !== 0 && weight > colSize) {
+                                weight = 0;
+                                bodyHtml += `
+                                    </div>
+                                    <div class="col-md">
+                                `;
+                            }
+                        })
+                        bodyHtml += `
+                            </div>
+                        </div>
+                        `;
+                        return bodyHtml;
+                    })(cheatSection));
+                });
+
             });
         </script>
     </head>
     <body>
         <div class="container-fluid">
             <div id="my-cheats">
+                <ul class="nav nav-tabs" id="tabHeaders" role="tablist">
+                </ul>
+                <div class="tab-content" id="nav-tabContent">
 
+                </div>
             </div>
         </div>
     </body>
