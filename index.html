@@ -27,6 +27,8 @@
                     </div>
                     `);
                 },
+
+                // todo: move this to display-functions.js
                 getTableSectionHtml: function(section) {
                     var data = section.data.sort(section.baseSort);
                     var chunks = section.view.split;
@@ -51,6 +53,56 @@
                     });
 
                     return bodyHtml;
+                },
+
+                getCheatLists: function(section) {
+                    var startHtml = `
+                        <div class="row">
+                            <div class="col-md">
+                        `;
+
+                    var endHtml = `
+                        </div>
+                    </div>
+                    `;
+
+                    var newColumnHtml = `
+                        </div>
+                        <div class="col-md">
+                    `;
+
+                    var getDataDisplayMetrics = function(data) {
+                        var total = 0;
+                        data.forEach((s) => {
+                            total += s.items.length;
+                        });
+                        return {
+                            total: total,
+                            getItemsPerCol: function(numberOfColumns) {
+                                return Math.floor(total / numberOfColumns);
+                            }
+                        }
+                    }
+
+                    var colInfo = getDataDisplayMetrics(section.data);
+                    var colSize = colInfo.getItemsPerCol(3);
+                    var weight = 0;
+
+                    var middleHtml = '';
+                    section.data.forEach((s, ndx) => {
+                        middleHtml += cheatsDisplay.sectionList(s.name, s.items);
+                        weight += s.items.length;
+
+                        if (ndx !== 0 && weight > colSize) {
+                            weight = 0;
+                            middleHtml += newColumnHtml;
+                        }
+                    })
+                    return `
+                        ${startHtml}
+                        ${middleHtml}
+                        ${endHtml}
+                    `;
                 }
             }
 
@@ -69,47 +121,7 @@
                 }).done(() => {
                     var cheatSection = cheatsData.vim;
                     renderer.addTab(cheatSection.id, cheatSection.name);
-                    renderer.addBody(cheatSection.id, (function(section) {
-                        var bodyHtml = `
-                        <div class="row">
-                            <div class="col-md">
-                        `;
-
-                        var total = 0;
-                        section.data.forEach((s) => {
-                            total += s.items.length;
-                        });
-                        console.log(total);
-                        var colSize = Math.min(total / 3);
-                        var weight = 0;
-                        section.data.forEach((s, ndx) => {
-                            var listItems = '';
-                            s.items.forEach(item => { listItems += `
-                                        <li>${item.html}</li>
-                            `; });
-
-                            bodyHtml += `
-                                <h4>${s.name}</h4>
-                                <ul class="list-unstyled">
-                                    ${listItems}
-                                </ul>
-                            `;
-                            
-                            weight += s.items.length;
-                            if (ndx !== 0 && weight > colSize) {
-                                weight = 0;
-                                bodyHtml += `
-                                    </div>
-                                    <div class="col-md">
-                                `;
-                            }
-                        })
-                        bodyHtml += `
-                            </div>
-                        </div>
-                        `;
-                        return bodyHtml;
-                    })(cheatSection));
+                    renderer.addBody(cheatSection.id, renderer.getCheatLists(cheatSection));
                 });
 
             });

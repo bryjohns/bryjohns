@@ -46,3 +46,18 @@ cheatsDisplay.table = function(headers, data, hasColumnHeaders = true) {
         </table>
     `;
 };
+
+// expects {name: '', items: [{type: '', html: ''}]}
+cheatsDisplay.sectionList = function(title, items) {
+    var listItemsHtml = '';
+    items.forEach(item => { listItemsHtml += `
+        <li>${item.html}</li>
+    `; });
+
+    return `
+        <h4>${title}</h4>
+        <ul class="list-unstyled">
+            ${listItemsHtml}
+        </ul>
+    `;
+}

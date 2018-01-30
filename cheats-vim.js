@@ -1,10 +1,9 @@
-
-cheatsData = cheatsData || {};
+cheatsData = typeof(cheatsData) !== 'undefined' ? cheatsData : {};
 
 cheatsData.vim = {
     id: 'vim',
     name: 'VIM',
-    dataType: 'nameal',
+    dataType: 'sections',
     view: {},
     data: [
     {
