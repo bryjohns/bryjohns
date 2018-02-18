@@ -4,13 +4,14 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic-bootstrap.css">
         <script src="https://code.jquery.com/jquery-2.2.4.js"
             integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
             crossorigin="anonymous"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         <script src="display-functions.js"></script>
-        <script src="cheats-fips.js"></script>
+        <script src="bookmarks.js"></script>
         <script>
             var renderer = {
                 addTab: function(id, displayName) {
@@ -20,12 +21,10 @@
                     </li>
                     `);
                 },
-                addBody: function(id, bodyContents) {
-                    $('#nav-tabContent').append(`
-                    <div class="tab-pane fade" id="nav-${id}" role="tabpanel" aria-labelledby="nav-${id}-tab">
-                        ${bodyContents}
-                    </div>
-                    `);
+                addBody: function(id, displayController) {
+                    var $tabContainer = $(`<div class="tab-pane fade" id="nav-${id}" role="tabpanel" aria-labelledby="nav-${id}-tab"></div>`);
+                    $('#nav-tabContent').append($tabContainer);
+                    displayController($tabContainer);
                 },
 
                 // todo: move this to display-functions.js
@@ -37,7 +36,6 @@
                     for (var ndx = 0; ndx < chunks; ndx++) {
                         var start = splitInterval * ndx;
                         var end = ndx === chunks - 1 ? section.data.length - 1 : (ndx + 1) * splitInterval;
-                        console.log(section.data);
                         parts.push(section.data.slice(start, end));
                     }
 
@@ -107,23 +105,31 @@
             }
 
             $(function() {
-                console.log('started');
                 $.getScript({
                     url: 'cheats-fips.js'
                 }).done(() => {
-                    console.log('loaded');
                     var cheatSection = cheatsData.fips;
                     renderer.addTab(cheatSection.id, cheatSection.name);
-                    renderer.addBody(cheatSection.id, renderer.getTableSectionHtml(cheatSection));
+                    renderer.addBody(cheatSection.id, function($container) { 
+                        $container.append($(renderer.getTableSectionHtml(cheatSection)));
+                    });
                 });
                 $.getScript({
                     url: 'cheats-vim.js'
                 }).done(() => {
                     var cheatSection = cheatsData.vim;
                     renderer.addTab(cheatSection.id, cheatSection.name);
-                    renderer.addBody(cheatSection.id, renderer.getCheatLists(cheatSection));
+                    renderer.addBody(cheatSection.id, function($container) {
+                        $container.append(renderer.getCheatLists(cheatSection));
+                    });
                 });
-
+                $(function() {
+                    renderer.addTab('bookmarks', 'Bookmarks');
+                    renderer.addBody('bookmarks', function($container) { 
+                        // maintain this context by calling function from BookmarkViews
+                        BookmarkViews.display($container); 
+                    });
+                });
             });
         </script>
     </head>
@@ -132,10 +138,13 @@
             <div id="my-cheats">
                 <ul class="nav nav-tabs" id="tabHeaders" role="tablist">
                 </ul>
+                <a class="settings-link" href="#" style="position: absolute; top: 8px; right: 8px;"><span class="oi oi-menu" data-glyph="icon-menu" title="icon menu" aria-hidden="true"></span></a>
                 <div class="tab-content" id="nav-tabContent">
-
                 </div>
             </div>
+        </div>
+        <div id="templates">
+
         </div>
     </body>
 </html>
