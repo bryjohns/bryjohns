@@ -333,7 +333,7 @@ var BookmarkViews = {
                 ${filterClearTagHtml}
                 ${bookmarkSelectionHtml}
             </div>
-            <div class="d-flex">
+            <div class="d-flex flex-wrap">
                 ${bookmarksHtml}
             </div>
         `;
@@ -350,7 +350,7 @@ var BookmarkViews = {
             `;
 
         return `
-            <div class="bookmark-container d-inline-block w-25 p-3 m-3 border border-info" data-url="${bookmark.url}">
+            <div class="bookmark-container w-25 p-3 m-3 border border-info" style="min-width: 200px" data-url="${bookmark.url}">
                 ${editButtonsHtml}
                 <div>
                     <a href="${bookmark.url}" target="_blank">${bookmark.title || bookmark.url}</a>
