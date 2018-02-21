@@ -1,5 +1,5 @@
 // TODO: Validation for same bookmark
-// TODO: Set up tags
+// TODO: Edit tags ( tagName | delete edit)
 // TODO: Set up import
 // TODO: Set up http://api.screenshotlayer.com/api/capture
 // TODO: Start toasting
@@ -51,7 +51,7 @@ var BookmarksApi = {
             }
         }
 
-        return Object.keys(holder);
+        return Object.keys(holder).sort();
     },
     getBookmarks: function() {
         var container = this.getStarageContainer();
@@ -340,7 +340,7 @@ var BookmarkViews = {
     },
     _getBookmarkDisplay: function(bookmark, activeFilter) {
         // TODO: flex this
-        var tagsHtml = bookmark.tags.map((t) => this._getTagDisplay(t, activeFilter)).join('\n');
+        var tagsHtml = bookmark.tags.sort().map((t) => this._getTagDisplay(t, activeFilter)).join('\n');
 
         var editButtonsHtml = `
                 <div class="edit-buttons" class="position-absolute" style="top: 4px; right: 4px;">
@@ -353,7 +353,7 @@ var BookmarkViews = {
             <div class="bookmark-container d-inline-block w-25 p-3 m-3 border border-info" data-url="${bookmark.url}">
                 ${editButtonsHtml}
                 <div>
-                    <a href="${bookmark.url}">${bookmark.title || bookmark.url}</a>
+                    <a href="${bookmark.url}" target="_blank">${bookmark.title || bookmark.url}</a>
                     <p>${bookmark.summary || '&nbsp;'}</p>
                 </div>
                 <div>
